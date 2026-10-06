@@ -1,0 +1,216 @@
+{
+  "herramienta": "healthcheck.sh",
+  "version": "1.0.0",
+  "generado": "2026-10-06T21:21:29+02:00",
+  "host": "vm",
+  "etiqueta": "lab-ubuntu-24",
+  "sistema": {
+    "so": "Ubuntu 24.04.4 LTS",
+    "kernel": "6.18.44-fc-v70",
+    "nucleos": 2,
+    "tiempo_encendido": "44 min"
+  },
+  "estado": "CRITICAL",
+  "codigo_salida": 2,
+  "resumen": {"ok": 13, "warning": 0, "critical": 1, "unknown": 0, "info": 4},
+  "comprobaciones": [
+    {
+      "seccion": "recursos",
+      "nombre": "Carga media (5 min)",
+      "estado": "OK",
+      "valor": "0.92 · 46% de 2 núcleos",
+      "porcentaje": 46,
+      "umbral_aviso": 100,
+      "umbral_critico": 200,
+      "umbral": "aviso ≥ 100% · crítico ≥ 200%",
+      "detalle": "1 / 5 / 15 min: 0.63 / 0.92 / 0.60"
+    },
+    {
+      "seccion": "recursos",
+      "nombre": "Memoria",
+      "estado": "OK",
+      "valor": "10% · 876.6 MiB de 7.8 GiB",
+      "porcentaje": 10,
+      "umbral_aviso": 85,
+      "umbral_critico": 95,
+      "umbral": "aviso ≥ 85% · crítico ≥ 95%",
+      "detalle": "Disponible: 6.9 GiB (MemAvailable, incluye caché recuperable)"
+    },
+    {
+      "seccion": "recursos",
+      "nombre": "Swap",
+      "estado": "INFO",
+      "valor": "sin swap",
+      "porcentaje": null,
+      "umbral_aviso": null,
+      "umbral_critico": null,
+      "umbral": "",
+      "detalle": "No hay espacio de intercambio configurado."
+    },
+    {
+      "seccion": "almacenamiento",
+      "nombre": "Disco /",
+      "estado": "OK",
+      "valor": "32% · 13.0 GiB de 251.9 GiB",
+      "porcentaje": 32,
+      "umbral_aviso": 80,
+      "umbral_critico": 90,
+      "umbral": "aviso ≥ 80% · crítico ≥ 90%",
+      "detalle": "/dev/vda (ext4) · libre: 28.7 GiB"
+    },
+    {
+      "seccion": "almacenamiento",
+      "nombre": "Inodos /",
+      "estado": "OK",
+      "valor": "3% · 338 403 de 16 777 216",
+      "porcentaje": 3,
+      "umbral_aviso": 80,
+      "umbral_critico": 90,
+      "umbral": "aviso ≥ 80% · crítico ≥ 90%",
+      "detalle": "/dev/vda · libres: 16 438 813"
+    },
+    {
+      "seccion": "almacenamiento",
+      "nombre": "Disco /opt/claude-code",
+      "estado": "CRITICAL",
+      "valor": "91% · 236.0 MiB de 264.9 MiB",
+      "porcentaje": 91,
+      "umbral_aviso": 80,
+      "umbral_critico": 90,
+      "umbral": "aviso ≥ 80% · crítico ≥ 90%",
+      "detalle": "/dev/vdc (ext4) · libre: 23.5 MiB"
+    },
+    {
+      "seccion": "almacenamiento",
+      "nombre": "Inodos /opt/claude-code",
+      "estado": "OK",
+      "valor": "1% · 13 de 4 128",
+      "porcentaje": 1,
+      "umbral_aviso": 80,
+      "umbral_critico": 90,
+      "umbral": "aviso ≥ 80% · crítico ≥ 90%",
+      "detalle": "/dev/vdc · libres: 4 115"
+    },
+    {
+      "seccion": "almacenamiento",
+      "nombre": "Disco /opt/env-runner",
+      "estado": "OK",
+      "valor": "67% · 30.2 MiB de 46.7 MiB",
+      "porcentaje": 67,
+      "umbral_aviso": 80,
+      "umbral_critico": 90,
+      "umbral": "aviso ≥ 80% · crítico ≥ 90%",
+      "detalle": "/dev/vdd (ext4) · libre: 15.5 MiB"
+    },
+    {
+      "seccion": "almacenamiento",
+      "nombre": "Inodos /opt/env-runner",
+      "estado": "OK",
+      "valor": "1% · 12 de 4 096",
+      "porcentaje": 1,
+      "umbral_aviso": 80,
+      "umbral_critico": 90,
+      "umbral": "aviso ≥ 80% · crítico ≥ 90%",
+      "detalle": "/dev/vdd · libres: 4 084"
+    },
+    {
+      "seccion": "servicios",
+      "nombre": "Servicio postgres",
+      "estado": "OK",
+      "valor": "en ejecución · 6 procesos",
+      "porcentaje": null,
+      "umbral_aviso": null,
+      "umbral_critico": null,
+      "umbral": "debe estar en ejecución",
+      "detalle": "pgrep -x postgres (sin systemd)"
+    },
+    {
+      "seccion": "servicios",
+      "nombre": "Servicio redis-server",
+      "estado": "OK",
+      "valor": "en ejecución · 1 proceso",
+      "porcentaje": null,
+      "umbral_aviso": null,
+      "umbral_critico": null,
+      "umbral": "debe estar en ejecución",
+      "detalle": "pgrep -x redis-server (sin systemd)"
+    },
+    {
+      "seccion": "red",
+      "nombre": "Puertos TCP en escucha",
+      "estado": "INFO",
+      "valor": "7 puertos: 2024, 2025, 5432, 6379, 8080, 35467, 41219",
+      "porcentaje": null,
+      "umbral_aviso": null,
+      "umbral_critico": null,
+      "umbral": "",
+      "detalle": "0.0.0.0 → 2024, 2025 · 127.0.0.1 → 5432, 6379, 8080, 35467, 41219 · Fuente: /proc/net/tcp (ss no está disponible)"
+    },
+    {
+      "seccion": "red",
+      "nombre": "Puerto 5432/tcp",
+      "estado": "OK",
+      "valor": "en escucha",
+      "porcentaje": null,
+      "umbral_aviso": null,
+      "umbral_critico": null,
+      "umbral": "debe estar en escucha",
+      "detalle": "Direcciones: 127.0.0.1"
+    },
+    {
+      "seccion": "red",
+      "nombre": "Puerto 6379/tcp",
+      "estado": "OK",
+      "valor": "en escucha",
+      "porcentaje": null,
+      "umbral_aviso": null,
+      "umbral_critico": null,
+      "umbral": "debe estar en escucha",
+      "detalle": "Direcciones: 127.0.0.1"
+    },
+    {
+      "seccion": "red",
+      "nombre": "Puerto 8080/tcp",
+      "estado": "OK",
+      "valor": "en escucha",
+      "porcentaje": null,
+      "umbral_aviso": null,
+      "umbral_critico": null,
+      "umbral": "debe estar en escucha",
+      "detalle": "Direcciones: 127.0.0.1"
+    },
+    {
+      "seccion": "sistema",
+      "nombre": "Tiempo encendido",
+      "estado": "INFO",
+      "valor": "44 min",
+      "porcentaje": null,
+      "umbral_aviso": null,
+      "umbral_critico": null,
+      "umbral": "",
+      "detalle": "Último arranque: 2026-10-06 20:36"
+    },
+    {
+      "seccion": "sistema",
+      "nombre": "Reinicio pendiente",
+      "estado": "OK",
+      "valor": "no",
+      "porcentaje": null,
+      "umbral_aviso": null,
+      "umbral_critico": null,
+      "umbral": "sin reinicio pendiente",
+      "detalle": "No existe /var/run/reboot-required."
+    },
+    {
+      "seccion": "sistema",
+      "nombre": "Accesos SSH fallidos",
+      "estado": "INFO",
+      "valor": "no comprobado",
+      "porcentaje": null,
+      "umbral_aviso": null,
+      "umbral_critico": null,
+      "umbral": "",
+      "detalle": "No hay log de autenticación legible (/var/log/auth.log o /var/log/secure; puede requerir root o el grupo adm)."
+    }
+  ]
+}

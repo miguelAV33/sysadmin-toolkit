@@ -1,0 +1,53 @@
+# escaneo-red.sh — ejecuciones reales
+# Entorno: contenedor Ubuntu 24.04.4 LTS, Bash 5.2.21, ejecutado como root el
+# 2026-10-06. La red del contenedor está restringida, así que se escanea la
+# interfaz de loopback. En 127.0.0.1 escuchan PostgreSQL (5432), Redis (6379)
+# y un servidor web de Python de prueba (8080, solo en 127.0.0.1).
+# Salida sin retocar (solo se han eliminado los códigos de color).
+
+$ bin/escaneo-red.sh -p 22,80,5432,6379,8080 127.0.0.0/30
+[INFO] Escaneando 127.0.0.0/30: 2 direcciones, detección por ICMP, 32 sondeos en paralelo, puertos: 22,80,5432,6379,8080 (5 puertos)
+IP               ESTADO         DETECCIÓN  NOMBRE (DNS)                 PUERTOS ABIERTOS
+127.0.0.1        activo         icmp       localhost                    5432, 6379, 8080
+127.0.0.2        activo         icmp       -                            -
+[ OK ] Direcciones activas: 2 de 2 en 127.0.0.0/30 (detección por ICMP, 0 s).
+[código de salida: 0]
+
+$ bin/escaneo-red.sh --csv -p 22,5432,6379,8080 127.0.0.0/29
+[INFO] Escaneando 127.0.0.0/29: 6 direcciones, detección por ICMP, 32 sondeos en paralelo, puertos: 22,5432,6379,8080 (4 puertos)
+ip,estado,deteccion,nombre,puertos_abiertos
+"127.0.0.1","activo","icmp","localhost","5432;6379;8080"
+"127.0.0.2","activo","icmp","-","-"
+"127.0.0.3","activo","icmp","-","-"
+"127.0.0.4","activo","icmp","-","-"
+"127.0.0.5","activo","icmp","-","-"
+"127.0.0.6","activo","icmp","-","-"
+[ OK ] Direcciones activas: 6 de 6 en 127.0.0.0/29 (detección por ICMP, 0 s).
+[código de salida: 0]
+
+$ bin/escaneo-red.sh --sin-ping -p 5432,6379,8000-8100 127.0.0.1/32
+[INFO] Detección por TCP (--sin-ping).
+[INFO] Escaneando 127.0.0.1/32: 1 dirección, detección por TCP, 32 sondeos en paralelo, puertos: 5432,6379,8000-8100 (103 puertos)
+IP               ESTADO         DETECCIÓN  NOMBRE (DNS)                 PUERTOS ABIERTOS
+127.0.0.1        activo         tcp        localhost                    5432, 6379, 8080
+[ OK ] Direcciones activas: 1 de 1 en 127.0.0.1/32 (detección por TCP, 1 s).
+[código de salida: 0]
+
+$ bin/escaneo-red.sh --todos --sin-dns -p 22,443 10.255.255.0/30
+[INFO] Escaneando 10.255.255.0/30: 2 direcciones, detección por ICMP, 32 sondeos en paralelo, puertos: 22,443 (2 puertos)
+IP               ESTADO         DETECCIÓN  NOMBRE (DNS)                 PUERTOS ABIERTOS
+10.255.255.1     sin respuesta  -          -                            -
+10.255.255.2     sin respuesta  -          -                            -
+[ OK ] Direcciones activas: 0 de 2 en 10.255.255.0/30 (detección por ICMP, 1 s).
+[código de salida: 0]
+
+$ bin/escaneo-red.sh 10.0.0.0/16
+[ERROR] Rango demasiado grande: /16 son 65536 direcciones; el máximo es /22 (1024).
+Usa «escaneo-red.sh --help» para ver las opciones disponibles.
+[código de salida: 2]
+
+$ bin/escaneo-red.sh -p 22,70000 192.168.1.0/24
+[ERROR] --puertos: «70000» está fuera de 1-65535 o el rango está al revés.
+Usa «escaneo-red.sh --help» para ver las opciones disponibles.
+[código de salida: 2]
+

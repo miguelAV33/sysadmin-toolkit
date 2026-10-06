@@ -1,0 +1,13 @@
+# Configuración de ShellCheck del proyecto (se aplica con «make lint»).
+
+# Seguir los «source» de lib/*.sh relativos a cada script.
+source-path=SCRIPTDIR
+external-sources=true
+
+# Comprobaciones opcionales activadas además de las de por defecto.
+enable=add-default-case
+enable=avoid-nullary-conditions
+enable=check-unassigned-uppercase
+enable=deprecate-which
+enable=quote-safe-variables
+enable=require-double-brackets

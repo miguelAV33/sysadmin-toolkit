@@ -1,0 +1,6 @@
+usuario,nombre_completo,grupo,shell
+lgarcia,Lucía García Romero,desarrollo,/bin/bash
+jmartin,Javier Martín Sanz,desarrollo,/bin/bash
+anavarro,Ana Navarro Gil,sistemas,/bin/bash
+pruiz,Pablo Ruiz Ortega,soporte,/bin/bash
+mlopez,María López Díaz,soporte,/usr/bin/dash

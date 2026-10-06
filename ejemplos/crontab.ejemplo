@@ -1,0 +1,24 @@
+# Ejemplo de tareas programadas para sysadmin-toolkit.
+#
+# Instalación: como root, «crontab -e» y pegar las líneas que interesen, o
+# copiar a /etc/cron.d/sysadmin-toolkit añadiendo «root» como sexto campo.
+# Se supone el kit instalado en /opt/sysadmin-toolkit; ajusta las rutas.
+#
+# Recuerda: en crontab el carácter % tiene un significado especial y hay que
+# escribirlo como \%.
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+MAILTO=admin@example.com
+
+# Salud del servidor cada 15 minutos. Con --quiet no imprime nada, así que
+# cron solo envía correo cuando el estado NO es OK (lo imprime el «echo»).
+# Además publica el informe HTML y guarda el JSON para otras herramientas.
+*/15 * * * * /opt/sysadmin-toolkit/bin/healthcheck.sh -q -c /etc/sysadmin-toolkit/healthcheck.conf --html /var/www/estado/index.html --json /var/lib/healthcheck/ultimo.json || echo "healthcheck en $(hostname): código $? (1 WARNING, 2 CRITICAL, 3 UNKNOWN)"
+
+# Copia de /etc y /var/www todos los días a las 03:15: 7 diarias y 4 semanales.
+# backup.sh sale con 3 si la copia anterior aún no ha terminado (flock).
+15 3 * * * /opt/sysadmin-toolkit/bin/backup.sh -q -d /srv/backups -n web --keep-daily 7 --keep-weekly 4 --log /var/log/backup-web.log /etc /var/www
+
+# Inventario de la red de oficina los lunes a las 07:00, en CSV con fecha.
+0 7 * * 1 /opt/sysadmin-toolkit/bin/escaneo-red.sh -q --csv -p 22,80,443,3389 192.168.1.0/24 > /var/lib/inventario/red-$(date +\%F).csv

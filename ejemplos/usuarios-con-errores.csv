@@ -1,0 +1,8 @@
+usuario,nombre_completo,grupo,shell
+lgarcia,Lucía García Romero,desarrollo,/bin/bash
+root,Administrador,root,/bin/bash
+Pedro.Sanchez,Pedro Sánchez,soporte,/bin/bash
+jmartin,Javier Martín Sanz,desarrollo,/bin/fish
+lgarcia,Lucía García (repetida),desarrollo,/bin/bash
+aruiz,Alba Ruiz,ventas
+crodriguez,Carlos Rodríguez: becario,soporte,/bin/bash

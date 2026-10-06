@@ -1,0 +1,16 @@
+# Herramientas instaladas en local (bats con «make herramientas»)
+.tools/
+node_modules/
+
+# Informes y salidas generados al probar los scripts.
+# Las muestras de docs/ sí se versionan.
+*.html
+*.json
+!docs/informe-ejemplo.html
+!docs/informe-ejemplo.json
+*.tmp.*
+*.part
+*.log
+
+# Ficheros de credenciales de alta-usuarios.sh: nunca al repositorio.
+credenciales_*.csv

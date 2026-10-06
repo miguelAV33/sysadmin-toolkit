@@ -1,0 +1,93 @@
+# backup.sh — ejecuciones reales
+# Entorno: contenedor Ubuntu 24.04.4 LTS, Bash 5.2.21, ejecutado como root el
+# 2026-10-06. Se copia el /etc real del contenedor en /srv/backups.
+# Salida sin retocar (solo se han eliminado los códigos de color).
+
+$ bin/backup.sh --dry-run -d /srv/backups -n etc /etc
+[INFO] Modo simulación (--dry-run): no se escribe ni se borra nada.
+[INFO] Origen: /etc (5.7 MiB sin comprimir)
+[INFO] [simulación] Se crearía el directorio /srv/backups
+[INFO] [simulación] Se crearía /srv/backups/etc_2026-10-06_212141.tar.gz y etc_2026-10-06_212141.tar.gz.sha256
+[INFO] [simulación] Orden: tar --create --gzip --file /srv/backups/etc_2026-10-06_212141.tar.gz --directory / -- etc
+[INFO] Retención (diarias: 7, semanales: 4): 1 copia, se conservan 1, se borran 0.
+[ OK ] Simulación terminada.
+[código de salida: 0]
+
+$ bin/backup.sh -d /srv/backups -n etc -e '*.dpkg-old' --log /var/log/backup-etc.log /etc
+[INFO] Creando etc_2026-10-06_212141.tar.gz...
+[ OK ] Copia creada: /srv/backups/etc_2026-10-06_212141.tar.gz (967.4 KiB)
+[INFO] SHA-256: 206ee603c85cb1ff99a27ff9367169671beaae9fe0e946924069b13e1af37fcb
+[INFO] Retención (diarias: 7, semanales: 4): 1 copia, se conservan 1, se borran 0.
+[ OK ] Copia terminada en 1 s.
+[código de salida: 0]
+
+$ ls -l /srv/backups
+total 972
+-rw------- 1 root root 990715 Oct  6 21:21 etc_2026-10-06_212141.tar.gz
+-rw------- 1 root root     95 Oct  6 21:21 etc_2026-10-06_212141.tar.gz.sha256
+[código de salida: 0]
+
+$ (cd /srv/backups && sha256sum -c etc_*.tar.gz.sha256)
+etc_2026-10-06_212141.tar.gz: OK
+[código de salida: 0]
+
+$ tar -tzf /srv/backups/etc_*.tar.gz | head -n 5
+etc/
+etc/rc2.d/
+etc/rc2.d/S01redis-server
+etc/rc2.d/S01dbus
+etc/rc2.d/S01docker
+[código de salida: 0]
+
+$ bin/backup.sh --verbose -d /srv/backups -n etc -e '*.dpkg-old' --log /var/log/backup-etc.log /etc
+[DEBUG] Bloqueo obtenido: /srv/backups/.etc.lock
+[INFO] Origen: /etc (5.7 MiB sin comprimir)
+[DEBUG] Orden: tar --create --gzip --file /srv/backups/etc_2026-10-06_212144.tar.gz.part --exclude=*.dpkg-old --directory / -- etc
+[INFO] Creando etc_2026-10-06_212144.tar.gz...
+[DEBUG] Verificación con tar --list correcta
+[ OK ] Copia creada: /srv/backups/etc_2026-10-06_212144.tar.gz (967.4 KiB)
+[INFO] SHA-256: 206ee603c85cb1ff99a27ff9367169671beaae9fe0e946924069b13e1af37fcb
+[DEBUG] Se conserva etc_2026-10-06_212144.tar.gz (diaria+semanal)
+[INFO] Retención (diarias: 7, semanales: 4): 2 copias, se conservan 1, se borran 1.
+[INFO] Borrada etc_2026-10-06_212141.tar.gz
+[ OK ] Copia terminada en 0 s.
+[código de salida: 0]
+
+$ ls -l /srv/backups
+total 972
+-rw------- 1 root root 990715 Oct  6 21:21 etc_2026-10-06_212144.tar.gz
+-rw------- 1 root root     95 Oct  6 21:21 etc_2026-10-06_212144.tar.gz.sha256
+[código de salida: 0]
+
+$ flock /srv/backups/.etc.lock sleep 5 & sleep 1; bin/backup.sh -d /srv/backups -n etc /etc
+[ERROR] Ya hay una copia en curso con destino /srv/backups y prefijo «etc» (bloqueo: /srv/backups/.etc.lock).
+[código de salida: 3]
+
+$ cat /var/log/backup-etc.log
+2026-10-06 21:21:41 [DEBUG] backup.sh: Bloqueo obtenido: /srv/backups/.etc.lock
+2026-10-06 21:21:41 [DEBUG] backup.sh: Orden: tar --create --gzip --file /srv/backups/etc_2026-10-06_212141.tar.gz.part --exclude=*.dpkg-old --directory / -- etc
+2026-10-06 21:21:41 [INFO] backup.sh: Creando etc_2026-10-06_212141.tar.gz...
+2026-10-06 21:21:42 [DEBUG] backup.sh: Verificación con tar --list correcta
+2026-10-06 21:21:42 [OK] backup.sh: Copia creada: /srv/backups/etc_2026-10-06_212141.tar.gz (967.4 KiB)
+2026-10-06 21:21:42 [INFO] backup.sh: SHA-256: 206ee603c85cb1ff99a27ff9367169671beaae9fe0e946924069b13e1af37fcb
+2026-10-06 21:21:42 [DEBUG] backup.sh: Se conserva etc_2026-10-06_212141.tar.gz (diaria+semanal)
+2026-10-06 21:21:42 [INFO] backup.sh: Retención (diarias: 7, semanales: 4): 1 copia, se conservan 1, se borran 0.
+2026-10-06 21:21:42 [OK] backup.sh: Copia terminada en 1 s.
+2026-10-06 21:21:44 [DEBUG] backup.sh: Bloqueo obtenido: /srv/backups/.etc.lock
+2026-10-06 21:21:44 [INFO] backup.sh: Origen: /etc (5.7 MiB sin comprimir)
+2026-10-06 21:21:44 [DEBUG] backup.sh: Orden: tar --create --gzip --file /srv/backups/etc_2026-10-06_212144.tar.gz.part --exclude=*.dpkg-old --directory / -- etc
+2026-10-06 21:21:44 [INFO] backup.sh: Creando etc_2026-10-06_212144.tar.gz...
+2026-10-06 21:21:44 [DEBUG] backup.sh: Verificación con tar --list correcta
+2026-10-06 21:21:44 [OK] backup.sh: Copia creada: /srv/backups/etc_2026-10-06_212144.tar.gz (967.4 KiB)
+2026-10-06 21:21:44 [INFO] backup.sh: SHA-256: 206ee603c85cb1ff99a27ff9367169671beaae9fe0e946924069b13e1af37fcb
+2026-10-06 21:21:44 [DEBUG] backup.sh: Se conserva etc_2026-10-06_212144.tar.gz (diaria+semanal)
+2026-10-06 21:21:44 [INFO] backup.sh: Retención (diarias: 7, semanales: 4): 2 copias, se conservan 1, se borran 1.
+2026-10-06 21:21:44 [INFO] backup.sh: Borrada etc_2026-10-06_212141.tar.gz
+2026-10-06 21:21:44 [OK] backup.sh: Copia terminada en 0 s.
+[código de salida: 0]
+
+$ bin/backup.sh -d /srv/backups --keep-daily 0 /etc
+[ERROR] --keep-daily debe ser un entero mayor o igual que 1 (recibido «0»).
+Usa «backup.sh --help» para ver las opciones disponibles.
+[código de salida: 2]
+

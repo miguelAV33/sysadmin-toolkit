@@ -1,0 +1,113 @@
+# alta-usuarios.sh — ejecuciones reales
+# Entorno: contenedor Ubuntu 24.04.4 LTS (desechable), Bash 5.2.21, ejecutado
+# como root el 2026-10-06. Los usuarios y grupos creados se borraron después.
+# El contenido del fichero de credenciales no se muestra a propósito.
+# Salida sin retocar (solo se han eliminado los códigos de color).
+
+$ cat ejemplos/usuarios.csv
+usuario,nombre_completo,grupo,shell
+lgarcia,Lucía García Romero,desarrollo,/bin/bash
+jmartin,Javier Martín Sanz,desarrollo,/bin/bash
+anavarro,Ana Navarro Gil,sistemas,/bin/bash
+pruiz,Pablo Ruiz Ortega,soporte,/bin/bash
+mlopez,María López Díaz,soporte,/usr/bin/dash
+[código de salida: 0]
+
+$ bin/alta-usuarios.sh ejemplos/usuarios.csv
+
+Plan de alta (ejemplos/usuarios.csv) · SIMULACIÓN: no se modifica nada
+
+LÍNEA  USUARIO        NOMBRE                     GRUPO          SHELL          ACCIÓN
+2      lgarcia        Lucía García Romero        desarrollo     /bin/bash      CREAR: grupo nuevo
+3      jmartin        Javier Martín Sanz         desarrollo     /bin/bash      CREAR: grupo nuevo
+4      anavarro       Ana Navarro Gil            sistemas       /bin/bash      CREAR: grupo nuevo
+5      pruiz          Pablo Ruiz Ortega          soporte        /bin/bash      CREAR: grupo nuevo
+6      mlopez         María López Díaz           soporte        /usr/bin/dash  CREAR: grupo nuevo
+
+Resumen: 5 a crear · 0 omitidos · 0 con errores · 3 grupos nuevos (desarrollo sistemas soporte)
+
+[INFO] Simulación terminada. Para crear los usuarios: sudo alta-usuarios.sh --aplicar ejemplos/usuarios.csv
+[código de salida: 0]
+
+$ bin/alta-usuarios.sh ejemplos/usuarios-con-errores.csv
+
+Plan de alta (ejemplos/usuarios-con-errores.csv) · SIMULACIÓN: no se modifica nada
+
+LÍNEA  USUARIO        NOMBRE                     GRUPO          SHELL          ACCIÓN
+2      lgarcia        Lucía García Romero        desarrollo     /bin/bash      CREAR: grupo nuevo
+3      root           Administrador              root           /bin/bash      OMITIR: ya existe en el sistema
+4      Pedro.Sanchez  Pedro Sánchez              soporte        /bin/bash      ERROR: usuario no válido
+5      jmartin        Javier Martín Sanz         desarrollo     /bin/fish      ERROR: shell no incluida en /etc/shells
+6      lgarcia        Lucía García (repetida)    desarrollo     /bin/bash      ERROR: usuario repetido (ya aparece en la línea 2)
+7      aruiz          Alba Ruiz                  ventas                        ERROR: se esperaban 4 campos y hay 3
+8      crodriguez     Carlos Rodríguez: becario  soporte        /bin/bash      ERROR: el nombre no puede contener «:»
+
+Resumen: 1 a crear · 1 omitido · 5 con errores · 1 grupo nuevo (desarrollo)
+
+[AVISO] 1 usuario ya existe y se omitirá.
+[ERROR] El CSV tiene 5 filas con errores. Corrígelas: no se aplica nada mientras haya errores.
+[código de salida: 3]
+
+$ bin/alta-usuarios.sh --aplicar --credenciales /root/altas-ejemplo.csv ejemplos/usuarios.csv
+
+Plan de alta (ejemplos/usuarios.csv)
+
+LÍNEA  USUARIO        NOMBRE                     GRUPO          SHELL          ACCIÓN
+2      lgarcia        Lucía García Romero        desarrollo     /bin/bash      CREAR: grupo nuevo
+3      jmartin        Javier Martín Sanz         desarrollo     /bin/bash      CREAR: grupo nuevo
+4      anavarro       Ana Navarro Gil            sistemas       /bin/bash      CREAR: grupo nuevo
+5      pruiz          Pablo Ruiz Ortega          soporte        /bin/bash      CREAR: grupo nuevo
+6      mlopez         María López Díaz           soporte        /usr/bin/dash  CREAR: grupo nuevo
+
+Resumen: 5 a crear · 0 omitidos · 0 con errores · 3 grupos nuevos (desarrollo sistemas soporte)
+
+[ OK ] Grupo creado: desarrollo
+[ OK ] Grupo creado: sistemas
+[ OK ] Grupo creado: soporte
+[ OK ] Usuario creado: lgarcia (Lucía García Romero, grupo desarrollo)
+[ OK ] Usuario creado: jmartin (Javier Martín Sanz, grupo desarrollo)
+[ OK ] Usuario creado: anavarro (Ana Navarro Gil, grupo sistemas)
+[ OK ] Usuario creado: pruiz (Pablo Ruiz Ortega, grupo soporte)
+[ OK ] Usuario creado: mlopez (María López Díaz, grupo soporte)
+[INFO] Usuarios creados: 5. Credenciales en /root/altas-ejemplo.csv (permisos 600).
+[ OK ] Alta terminada.
+[código de salida: 0]
+
+$ ls -l /root/altas-ejemplo.csv; grep -c "^[a-z]" /root/altas-ejemplo.csv
+-rw------- 1 root root 395 Oct  6 21:22 /root/altas-ejemplo.csv
+6
+[código de salida: 0]
+
+$ id lgarcia; getent passwd lgarcia; ls -ld /home/lgarcia
+uid=1001(lgarcia) gid=1002(desarrollo) groups=1002(desarrollo)
+lgarcia:x:1001:1002:Lucía García Romero:/home/lgarcia:/bin/bash
+drwxr-x--- 2 lgarcia desarrollo 4096 Oct  6 21:22 /home/lgarcia
+[código de salida: 0]
+
+$ chage -l lgarcia | head -n 3
+Last password change					: password must be changed
+Password expires					: password must be changed
+Password inactive					: password must be changed
+[código de salida: 0]
+
+$ bin/alta-usuarios.sh ejemplos/usuarios.csv
+
+Plan de alta (ejemplos/usuarios.csv) · SIMULACIÓN: no se modifica nada
+
+LÍNEA  USUARIO        NOMBRE                     GRUPO          SHELL          ACCIÓN
+2      lgarcia        Lucía García Romero        desarrollo     /bin/bash      OMITIR: ya existe en el sistema
+3      jmartin        Javier Martín Sanz         desarrollo     /bin/bash      OMITIR: ya existe en el sistema
+4      anavarro       Ana Navarro Gil            sistemas       /bin/bash      OMITIR: ya existe en el sistema
+5      pruiz          Pablo Ruiz Ortega          soporte        /bin/bash      OMITIR: ya existe en el sistema
+6      mlopez         María López Díaz           soporte        /usr/bin/dash  OMITIR: ya existe en el sistema
+
+Resumen: 0 a crear · 5 omitidos · 0 con errores · 0 grupos nuevos
+
+[AVISO] 5 usuarios ya existen y se omitirán.
+[INFO] No hay usuarios nuevos que crear.
+[código de salida: 0]
+
+$ setpriv --reuid=nobody --regid=nogroup --clear-groups bin/alta-usuarios.sh --aplicar ejemplos/usuarios.csv
+[ERROR] Para aplicar los cambios hay que ser root (prueba con sudo). Sin --aplicar se muestra el plan sin necesidad de root.
+[código de salida: 4]
+

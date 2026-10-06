@@ -1,0 +1,18 @@
+# Configuración de ShellCheck para las pruebas (bats).
+# ShellCheck usa el .shellcheckrc más cercano al fichero, así que este
+# sustituye al de la raíz para tests/.
+
+source-path=SCRIPTDIR
+external-sources=true
+enable=add-default-case
+enable=avoid-nullary-conditions
+enable=deprecate-which
+enable=quote-safe-variables
+
+# No se activa require-double-brackets: en bats lo habitual es «[ ]», que
+# además informa mejor del fallo.
+#
+# SC2154 (variable usada sin asignar): bats define BATS_TEST_TMPDIR,
+# BATS_FILE_TMPDIR, BATS_TEST_FILENAME, status, output y lines, y
+# ayudante.bash (cargado con «load», que ShellCheck no sigue) define RAIZ y BIN.
+disable=SC2154
