@@ -4,7 +4,7 @@ Cuatro scripts en Bash para tareas habituales de administración de sistemas Lin
 
 ![Informe HTML generado por healthcheck.sh](docs/informe.png)
 
-*Informe HTML real generado por `healthcheck.sh` en el contenedor de pruebas ([HTML](docs/informe-ejemplo.html) · [JSON](docs/informe-ejemplo.json)). El aviso crítico es real: ese sistema de ficheros estaba al 91 %.*
+*Informe HTML real generado por `healthcheck.sh` en el contenedor de pruebas ([HTML](docs/informe-ejemplo.html) · [JSON](docs/informe-ejemplo.json)). El estado crítico es real: nginx estaba configurado en `--servicios` pero no estaba en marcha. Los montajes de `/opt`, propios de las herramientas del contenedor, se excluyeron con `--excluir-montaje '/opt/*'`.*
 
 ## Scripts
 
@@ -92,8 +92,8 @@ Prioridad: CRITICAL > WARNING > UNKNOWN > OK. Un error de uso sale con 3 y no co
 **Desde Nagios / Icinga (NRPE).** `--nagios` imprime una sola línea con datos de rendimiento para las gráficas:
 
 ```text
-$ bin/healthcheck.sh --nagios --servicios postgres,redis-server --puertos-esperados 5432,6379,8080
-HEALTHCHECK CRITICAL - Disco /opt/claude-code: 91% · 236.0 MiB de 264.9 MiB | 'Carga media (5 min)'=46%;100;200;0;100 'Memoria'=10%;85;95;0;100 'Disco /'=32%;80;90;0;100 'Inodos /'=3%;80;90;0;100 'Disco /opt/claude-code'=91%;80;90;0;100 'Inodos /opt/claude-code'=1%;80;90;0;100 'Disco /opt/env-runner'=67%;80;90;0;100 'Inodos /opt/env-runner'=1%;80;90;0;100
+$ bin/healthcheck.sh --nagios --servicios postgres,redis-server,nginx --puertos-esperados 5432,6379,8080 --excluir-montaje '/opt/*'
+HEALTHCHECK CRITICAL - Servicio nginx: no está en ejecución | 'Carga media (5 min)'=26%;100;200;0;100 'Memoria'=8%;85;95;0;100 'Disco /'=32%;80;90;0;100 'Inodos /'=3%;80;90;0;100
 ```
 
 ```ini

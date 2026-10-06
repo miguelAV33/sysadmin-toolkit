@@ -2,29 +2,33 @@
 # Entorno: contenedor Ubuntu 24.04.4 LTS, Bash 5.2.21, sin systemd y sin «ss»,
 # ejecutado como root el 2026-10-06. Servicios de prueba en marcha:
 # PostgreSQL 16, Redis y un servidor web de Python en 127.0.0.1:8080.
+# nginx figura en --servicios pero no está instalado ni en marcha en el
+# contenedor: el CRÍTICO «servicio caído» es real.
+# --excluir-montaje '/opt/*' deja fuera los montajes de /opt, que pertenecen
+# a las herramientas del contenedor de pruebas y no al «servidor».
+# En la ejecución con --verbose se descarta la salida de error (2>/dev/null)
+# porque sus mensajes de depuración enumeran esos montajes internos; los
+# detalles de cada comprobación se escriben en la salida estándar y se ven.
 # Salida sin retocar (solo se han eliminado los códigos de color).
 
-$ bin/healthcheck.sh --etiqueta lab-ubuntu-24 --servicios postgres,redis-server --puertos-esperados 5432,6379,8080 --json docs/informe-ejemplo.json --html docs/informe-ejemplo.html
+$ bin/healthcheck.sh --etiqueta lab-ubuntu-24 --servicios postgres,redis-server,nginx --puertos-esperados 5432,6379,8080 --excluir-montaje '/opt/*' --json docs/informe-ejemplo.json --html docs/informe-ejemplo.html
 
 Informe de salud · lab-ubuntu-24
-host vm · Ubuntu 24.04.4 LTS · kernel 6.18.44-fc-v70 · 2 núcleos · 2026-10-06 21:21:29 CEST
+host vm · Ubuntu 24.04.4 LTS · kernel 6.18.44-fc-v70 · 2 núcleos · 2026-10-06 21:29:55 CEST
 
 RECURSOS
-  [OK]          Carga media (5 min)        0.92 · 46% de 2 núcleos              aviso ≥ 100% · crítico ≥ 200%
-  [OK]          Memoria                    10% · 876.6 MiB de 7.8 GiB           aviso ≥ 85% · crítico ≥ 95%
+  [OK]          Carga media (5 min)        0.53 · 26% de 2 núcleos              aviso ≥ 100% · crítico ≥ 200%
+  [OK]          Memoria                    8% · 697.0 MiB de 7.8 GiB            aviso ≥ 85% · crítico ≥ 95%
   [INFO]        Swap                       sin swap                             
 
 ALMACENAMIENTO
   [OK]          Disco /                    32% · 13.0 GiB de 251.9 GiB          aviso ≥ 80% · crítico ≥ 90%
-  [OK]          Inodos /                   3% · 338 403 de 16 777 216           aviso ≥ 80% · crítico ≥ 90%
-  [CRÍTICO]     Disco /opt/claude-code     91% · 236.0 MiB de 264.9 MiB         aviso ≥ 80% · crítico ≥ 90%
-  [OK]          Inodos /opt/claude-code    1% · 13 de 4 128                     aviso ≥ 80% · crítico ≥ 90%
-  [OK]          Disco /opt/env-runner      67% · 30.2 MiB de 46.7 MiB           aviso ≥ 80% · crítico ≥ 90%
-  [OK]          Inodos /opt/env-runner     1% · 12 de 4 096                     aviso ≥ 80% · crítico ≥ 90%
+  [OK]          Inodos /                   3% · 338 586 de 16 777 216           aviso ≥ 80% · crítico ≥ 90%
 
 SERVICIOS
   [OK]          Servicio postgres          en ejecución · 6 procesos            debe estar en ejecución
   [OK]          Servicio redis-server      en ejecución · 1 proceso             debe estar en ejecución
+  [CRÍTICO]     Servicio nginx             no está en ejecución                 debe estar en ejecución
 
 RED
   [INFO]        Puertos TCP en escucha     7 puertos: 2024, 2025, 5432, 6379, 8080, 35467, 41219 
@@ -33,65 +37,32 @@ RED
   [OK]          Puerto 8080/tcp            en escucha                           debe estar en escucha
 
 SISTEMA Y SEGURIDAD
-  [INFO]        Tiempo encendido           44 min                               
+  [INFO]        Tiempo encendido           53 min                               
   [OK]          Reinicio pendiente         no                                   sin reinicio pendiente
   [INFO]        Accesos SSH fallidos       no comprobado                        
 
-Estado global: CRITICAL — 1 crítico · 0 avisos · 13 correctos · 4 informativos
+Estado global: CRITICAL — 1 crítico · 0 avisos · 10 correctos · 4 informativos
 Código de salida: 2
 [código de salida: 2]
 
-$ bin/healthcheck.sh --verbose --etiqueta lab-ubuntu-24 --servicios postgres,redis-server,nginx --puertos-esperados 5432,6379,8080
-[DEBUG] Carga media (5 min): OK (0.92 · 46% de 2 núcleos)
-[DEBUG] Memoria: OK (10% · 876.6 MiB de 7.8 GiB)
-[DEBUG] Swap: INFO (sin swap)
-[DEBUG] Se ignora /dev/shm (tipo tmpfs)
-[DEBUG] Disco /: OK (32% · 13.0 GiB de 251.9 GiB)
-[DEBUG] Inodos /: OK (3% · 338 405 de 16 777 216)
-[DEBUG] Disco /opt/claude-code: CRITICAL (91% · 236.0 MiB de 264.9 MiB)
-[DEBUG] Inodos /opt/claude-code: OK (1% · 13 de 4 128)
-[DEBUG] Disco /opt/env-runner: OK (67% · 30.2 MiB de 46.7 MiB)
-[DEBUG] Inodos /opt/env-runner: OK (1% · 12 de 4 096)
-[DEBUG] Se ignora /mnt/sandboxing/model_tools_env/v1/python (tipo tmpfs)
-[DEBUG] Se ignora /sys/fs/cgroup (tipo tmpfs)
-[DEBUG] Se ignora /run/sandbox-telemetry (tipo tmpfs)
-[DEBUG] Método para comprobar servicios: pgrep
-[DEBUG] Servicio postgres: OK (en ejecución · 6 procesos)
-[DEBUG] Servicio redis-server: OK (en ejecución · 1 proceso)
-[DEBUG] Servicio nginx: CRITICAL (no está en ejecución)
-[DEBUG] Fuente de puertos: /proc/net/tcp (ss no está disponible)
-[DEBUG] Puertos TCP en escucha: INFO (7 puertos: 2024, 2025, 5432, 6379, 8080, 35467, 41219)
-[DEBUG] Puerto 5432/tcp: OK (en escucha)
-[DEBUG] Puerto 6379/tcp: OK (en escucha)
-[DEBUG] Puerto 8080/tcp: OK (en escucha)
-[DEBUG] Tiempo encendido: INFO (44 min)
-[DEBUG] Reinicio pendiente: OK (no)
-[DEBUG] Accesos SSH fallidos: INFO (no comprobado)
+$ bin/healthcheck.sh --verbose --etiqueta lab-ubuntu-24 --servicios postgres,redis-server,nginx --puertos-esperados 5432,6379,8080 --excluir-montaje '/opt/*' 2>/dev/null
 
 Informe de salud · lab-ubuntu-24
-host vm · Ubuntu 24.04.4 LTS · kernel 6.18.44-fc-v70 · 2 núcleos · 2026-10-06 21:21:29 CEST
+host vm · Ubuntu 24.04.4 LTS · kernel 6.18.44-fc-v70 · 2 núcleos · 2026-10-06 21:29:55 CEST
 
 RECURSOS
-  [OK]          Carga media (5 min)        0.92 · 46% de 2 núcleos              aviso ≥ 100% · crítico ≥ 200%
-                1 / 5 / 15 min: 0.63 / 0.92 / 0.60
-  [OK]          Memoria                    10% · 876.6 MiB de 7.8 GiB           aviso ≥ 85% · crítico ≥ 95%
-                Disponible: 6.9 GiB (MemAvailable, incluye caché recuperable)
+  [OK]          Carga media (5 min)        0.53 · 26% de 2 núcleos              aviso ≥ 100% · crítico ≥ 200%
+                1 / 5 / 15 min: 0.06 / 0.53 / 0.60
+  [OK]          Memoria                    8% · 701.8 MiB de 7.8 GiB            aviso ≥ 85% · crítico ≥ 95%
+                Disponible: 7.1 GiB (MemAvailable, incluye caché recuperable)
   [INFO]        Swap                       sin swap                             
                 No hay espacio de intercambio configurado.
 
 ALMACENAMIENTO
   [OK]          Disco /                    32% · 13.0 GiB de 251.9 GiB          aviso ≥ 80% · crítico ≥ 90%
                 /dev/vda (ext4) · libre: 28.7 GiB
-  [OK]          Inodos /                   3% · 338 405 de 16 777 216           aviso ≥ 80% · crítico ≥ 90%
-                /dev/vda · libres: 16 438 811
-  [CRÍTICO]     Disco /opt/claude-code     91% · 236.0 MiB de 264.9 MiB         aviso ≥ 80% · crítico ≥ 90%
-                /dev/vdc (ext4) · libre: 23.5 MiB
-  [OK]          Inodos /opt/claude-code    1% · 13 de 4 128                     aviso ≥ 80% · crítico ≥ 90%
-                /dev/vdc · libres: 4 115
-  [OK]          Disco /opt/env-runner      67% · 30.2 MiB de 46.7 MiB           aviso ≥ 80% · crítico ≥ 90%
-                /dev/vdd (ext4) · libre: 15.5 MiB
-  [OK]          Inodos /opt/env-runner     1% · 12 de 4 096                     aviso ≥ 80% · crítico ≥ 90%
-                /dev/vdd · libres: 4 084
+  [OK]          Inodos /                   3% · 338 588 de 16 777 216           aviso ≥ 80% · crítico ≥ 90%
+                /dev/vda · libres: 16 438 628
 
 SERVICIOS
   [OK]          Servicio postgres          en ejecución · 6 procesos            debe estar en ejecución
@@ -112,26 +83,26 @@ RED
                 Direcciones: 127.0.0.1
 
 SISTEMA Y SEGURIDAD
-  [INFO]        Tiempo encendido           44 min                               
+  [INFO]        Tiempo encendido           53 min                               
                 Último arranque: 2026-10-06 20:36
   [OK]          Reinicio pendiente         no                                   sin reinicio pendiente
                 No existe /var/run/reboot-required.
   [INFO]        Accesos SSH fallidos       no comprobado                        
                 No hay log de autenticación legible (/var/log/auth.log o /var/log/secure; puede requerir root o el grupo adm).
 
-Estado global: CRITICAL — 2 críticos · 0 avisos · 13 correctos · 4 informativos
+Estado global: CRITICAL — 1 crítico · 0 avisos · 10 correctos · 4 informativos
 Código de salida: 2
 [código de salida: 2]
 
-$ bin/healthcheck.sh --nagios --servicios postgres,redis-server --puertos-esperados 5432,6379,8080
-HEALTHCHECK CRITICAL - Disco /opt/claude-code: 91% · 236.0 MiB de 264.9 MiB | 'Carga media (5 min)'=46%;100;200;0;100 'Memoria'=10%;85;95;0;100 'Disco /'=32%;80;90;0;100 'Inodos /'=3%;80;90;0;100 'Disco /opt/claude-code'=91%;80;90;0;100 'Inodos /opt/claude-code'=1%;80;90;0;100 'Disco /opt/env-runner'=67%;80;90;0;100 'Inodos /opt/env-runner'=1%;80;90;0;100
+$ bin/healthcheck.sh --nagios --servicios postgres,redis-server,nginx --puertos-esperados 5432,6379,8080 --excluir-montaje '/opt/*'
+HEALTHCHECK CRITICAL - Servicio nginx: no está en ejecución | 'Carga media (5 min)'=26%;100;200;0;100 'Memoria'=8%;85;95;0;100 'Disco /'=32%;80;90;0;100 'Inodos /'=3%;80;90;0;100
 [código de salida: 2]
 
-$ bin/healthcheck.sh --quiet --servicios postgres,redis-server; echo "código: $?"
-código: 2
+$ bin/healthcheck.sh --quiet --servicios postgres,redis-server --excluir-montaje '/opt/*'; echo "código: $?"
+código: 0
 [código de salida: 0]
 
-$ bin/healthcheck.sh --disk-warn 95 --disk-crit 90
+$ bin/healthcheck.sh --disk-warn 95 --disk-crit 90 --excluir-montaje '/opt/*'
 [ERROR] --disk-warn/--disk-crit: el umbral de aviso (95) no puede ser mayor que el crítico (90).
 Usa «healthcheck.sh --help» para ver las opciones disponibles.
 [código de salida: 3]
