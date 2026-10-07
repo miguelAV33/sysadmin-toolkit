@@ -29,7 +29,7 @@ Todos admiten `-h/--help`, `--version`, `-q/--quiet` y `-v/--verbose`. Los color
 ## Instalación
 
 ```bash
-sudo git clone https://github.com/HookMike/sysadmin-toolkit.git /opt/sysadmin-toolkit
+sudo git clone https://github.com/miguelAV33/sysadmin-toolkit.git /opt/sysadmin-toolkit
 # Opcional: enlaces en el PATH. Los scripts resuelven su ruta real con
 # readlink -f, así que encuentran lib/ aunque se llamen desde el enlace.
 sudo ln -s /opt/sysadmin-toolkit/bin/healthcheck.sh /usr/local/sbin/healthcheck
